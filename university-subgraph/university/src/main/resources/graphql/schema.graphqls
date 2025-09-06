@@ -1,0 +1,10 @@
+type Query {
+    university(id: ID!): University
+    universities: [University!]!
+}
+
+type University @key(fields: "id") {
+    id: ID!
+    name: String!
+    description: String
+}

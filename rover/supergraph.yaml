@@ -1,0 +1,10 @@
+federation_version: =2.3.5
+subgraphs:
+  university:
+    routing_url: http://university:8080/graphql
+    schema:
+      file: /rover/university/schema.graphqls
+  students:
+    routing_url: http://students:8081/graphql
+    schema:
+      file: /rover/students/schema.graphqls

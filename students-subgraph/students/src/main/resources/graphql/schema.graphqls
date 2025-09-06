@@ -1,0 +1,15 @@
+type Query { 
+    student(universityId: ID!): [Student!]!
+    allStudents: [Student!]!
+}
+
+type University @key(fields: "id") @extends {
+    id: ID! @external
+    student: [Student!]!
+}
+
+type Student {
+    id: ID!,
+    text: String
+    starRating: Int!
+}
