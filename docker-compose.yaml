@@ -18,6 +18,15 @@ services:
     networks:
       - graphql-network
 
+  teachers:
+    build:
+      context: ./teachers-subgraph
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    networks:
+      - graphql-network
+
   rover:
     image: ubuntu:20.04
     command: >
@@ -36,9 +45,11 @@ services:
       # Uncomment below if using local schema files
       - ./university-subgraph/university/src/main/resources/graphql:/rover/university
       - ./students-subgraph/students/src/main/resources/graphql:/rover/students
+      - ./teachers-subgraph/teachers/src/main/resources/graphql:/rover/teachers
     depends_on:
       - university
       - students
+      - teachers
     networks:
       - graphql-network
 
@@ -63,6 +74,7 @@ services:
       - rover
       - university
       - students
+      - teachers
     networks:
       - graphql-network
     healthcheck:

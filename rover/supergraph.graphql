@@ -23,6 +23,7 @@ scalar join__FieldSet
 
 enum join__Graph {
   STUDENTS @join__graph(name: "students", url: "http://students:8081/graphql")
+  TEACHERS @join__graph(name: "teachers", url: "http://teachers:8082/graphql")
   UNIVERSITY @join__graph(name: "university", url: "http://university:8080/graphql")
 }
 
@@ -42,10 +43,13 @@ enum link__Purpose {
 
 type Query
   @join__type(graph: STUDENTS)
+  @join__type(graph: TEACHERS)
   @join__type(graph: UNIVERSITY)
 {
   student(universityId: ID!): [Student!]! @join__field(graph: STUDENTS)
   allStudents: [Student!]! @join__field(graph: STUDENTS)
+  teacher(universityId: ID!): [Teacher!]! @join__field(graph: TEACHERS)
+  allTeachers: [Teacher!]! @join__field(graph: TEACHERS)
   university(id: ID!): University @join__field(graph: UNIVERSITY)
   universities: [University!]! @join__field(graph: UNIVERSITY)
 }
@@ -58,12 +62,22 @@ type Student
   starRating: Int!
 }
 
+type Teacher
+  @join__type(graph: TEACHERS)
+{
+  id: ID!
+  text: String
+  starRating: Int!
+}
+
 type University
   @join__type(graph: STUDENTS, key: "id", extension: true)
+  @join__type(graph: TEACHERS, key: "id", extension: true)
   @join__type(graph: UNIVERSITY, key: "id")
 {
   id: ID!
   student: [Student!]! @join__field(graph: STUDENTS)
+  teacher: [Teacher!]! @join__field(graph: TEACHERS)
   name: String! @join__field(graph: UNIVERSITY)
   description: String @join__field(graph: UNIVERSITY)
 }

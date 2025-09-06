@@ -8,3 +8,7 @@ subgraphs:
     routing_url: http://students:8081/graphql
     schema:
       file: /rover/students/schema.graphqls
+  teachers:
+    routing_url: http://teachers:8082/graphql
+    schema:
+      file: /rover/teachers/schema.graphqls
