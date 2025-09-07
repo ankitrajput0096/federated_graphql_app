@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated Use UniversityService with Postgres instead.
+ */
+@Deprecated
 public final class UniversitySource {
 
     private static final List<University> universityList = List.of(
