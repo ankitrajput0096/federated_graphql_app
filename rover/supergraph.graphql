@@ -19,6 +19,27 @@ directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on
 
 directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
 
+"""Represents a campus entity"""
+type Campus implements Entity
+  @join__implements(graph: UNIVERSITY, interface: "Entity")
+  @join__type(graph: UNIVERSITY, key: "id")
+{
+  id: ID!
+  name(filter: String): String!
+}
+
+"""Custom scalar for date representation"""
+scalar Date
+  @join__type(graph: UNIVERSITY)
+
+"""Interface for entities with common fields"""
+interface Entity
+  @join__type(graph: UNIVERSITY)
+{
+  id: ID!
+  name(filter: String): String!
+}
+
 scalar join__FieldSet
 
 enum join__Graph {
@@ -41,6 +62,7 @@ enum link__Purpose {
   EXECUTION
 }
 
+"""Query root for university operations"""
 type Query
   @join__type(graph: STUDENTS)
   @join__type(graph: TEACHERS)
@@ -52,6 +74,22 @@ type Query
   allTeachers: [Teacher!]! @join__field(graph: TEACHERS)
   university(id: ID!): University @join__field(graph: UNIVERSITY)
   universities: [University!]! @join__field(graph: UNIVERSITY)
+  searchUniversities(input: UniversityInput!): [SearchResult!]! @join__field(graph: UNIVERSITY)
+}
+
+"""Union type for search results"""
+union SearchResult
+  @join__type(graph: UNIVERSITY)
+  @join__unionMember(graph: UNIVERSITY, member: "University")
+  @join__unionMember(graph: UNIVERSITY, member: "Campus")
+ = University | Campus
+
+"""Enum for university status"""
+enum Status
+  @join__type(graph: UNIVERSITY)
+{
+  ACTIVE @join__enumValue(graph: UNIVERSITY)
+  INACTIVE @join__enumValue(graph: UNIVERSITY)
 }
 
 type Student
@@ -70,6 +108,7 @@ type Teacher
   starRating: Int!
 }
 
+"""Represents a university entity"""
 type University
   @join__type(graph: STUDENTS, key: "id", extension: true)
   @join__type(graph: TEACHERS, key: "id", extension: true)
@@ -80,4 +119,15 @@ type University
   teacher: [Teacher!]! @join__field(graph: TEACHERS)
   name: String! @join__field(graph: UNIVERSITY)
   description: String @join__field(graph: UNIVERSITY)
+  status: Status! @join__field(graph: UNIVERSITY)
+  createdAt: Date! @join__field(graph: UNIVERSITY)
+  ranking: Int @join__field(graph: UNIVERSITY)
+}
+
+"""Input type for searching universities"""
+input UniversityInput
+  @join__type(graph: UNIVERSITY)
+{
+  name: String!
+  status: Status
 }

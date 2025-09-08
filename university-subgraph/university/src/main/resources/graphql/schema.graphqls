@@ -1,10 +1,21 @@
-type Query {
-    university(id: ID!): University
-    universities: [University!]!
-}
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@tag"])
 
-type University @key(fields: "id") {
-    id: ID!
-    name: String!
-    description: String
-}
+"""Query root for university operations""" type Query { university(id: ID!): University universities: [University!]! searchUniversities(input: UniversityInput!): [SearchResult!]! }
+
+"""Represents a university entity""" type University @key(fields: "id") { id: ID! name: String! description: String status: Status! @metadata(tag: "core") createdAt: Date! ranking: Int }
+
+"""Enum for university status""" enum Status { ACTIVE INACTIVE }
+
+"""Custom scalar for date representation""" scalar Date
+
+"""Interface for entities with common fields""" interface Entity @metadata(tag: "core") { id: ID! name(filter: String): String! }
+
+"""Union type for search results""" union SearchResult = University | Campus
+
+"""Represents a campus entity""" type Campus implements Entity @key(fields: "id") { id: ID! name(filter: String): String! }
+
+"""Input type for searching universities""" input UniversityInput { name: String! status: Status }
+
+"""Custom directive for metadata tagging""" directive @metadata(tag: String!) on OBJECT | INTERFACE | FIELD_DEFINITION
+
+"""Custom directive for rate limiting queries""" directive @rateLimit(max: Int! = 10) on QUERY

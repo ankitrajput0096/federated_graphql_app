@@ -2,6 +2,7 @@ package com.subgraph.university.controller;
 
 
 import com.subgraph.university.model.University;
+import com.subgraph.university.model.UniversityInput;
 import com.subgraph.university.service.UniversityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Controller
 public class UniversityController {
+
 
     @Autowired
     private UniversityService service;
@@ -24,5 +26,10 @@ public class UniversityController {
     @QueryMapping
     public List<University> universities() {
         return service.getUniversities();
+    }
+
+    @QueryMapping
+    public List<Object> searchUniversities(@Argument("input") UniversityInput input) {
+        return service.searchUniversities(input.name(), input.status());
     }
 }
