@@ -1,7 +1,6 @@
 package com.subgraph.university.model;
 
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * type University @key(fields: "id") {

@@ -32,4 +32,5 @@ public class UniversityController {
     public List<Object> searchUniversities(@Argument("input") UniversityInput input) {
         return service.searchUniversities(input.name(), input.status());
     }
+
 }

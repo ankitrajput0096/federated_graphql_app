@@ -1,21 +1,60 @@
 extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@tag"])
 
-"""Query root for university operations""" type Query { university(id: ID!): University universities: [University!]! searchUniversities(input: UniversityInput!): [SearchResult!]! }
+"""Query root for university operations"""
+type Query {
+    university(id: ID!): University
+    universities: [University!]!
+    searchUniversities(input: UniversityInput!): [SearchResult!]!
+}
 
-"""Represents a university entity""" type University @key(fields: "id") { id: ID! name: String! description: String status: Status! @metadata(tag: "core") createdAt: Date! ranking: Int }
+"""Represents a university entity"""
+type University @key(fields: "id") {
+    id: ID!
+    name: String!
+    description: String
+    status: Status! @metadata(tag: "core")
+    createdAt: Date!
+    ranking: Int
+}
 
-"""Enum for university status""" enum Status { ACTIVE INACTIVE }
+"""Enum for university status"""
+enum Status {
+    ACTIVE
+    INACTIVE
+}
 
-"""Custom scalar for date representation""" scalar Date
+"""Custom scalar for date representation"""
+scalar Date
 
-"""Interface for entities with common fields""" interface Entity @metadata(tag: "core") { id: ID! name(filter: String): String! }
+"""Interface for entities with common fields"""
+interface Entity @metadata(tag: "core") {
+    id: ID!
+    name(filter: String): String!
+}
 
-"""Union type for search results""" union SearchResult = University | Campus
+"""Union type for search results"""
+union SearchResult = University | Campus
 
-"""Represents a campus entity""" type Campus implements Entity @key(fields: "id") { id: ID! name(filter: String): String! }
+"""Represents a campus entity"""
+type Campus implements Entity @key(fields: "id") {
+    id: ID!
+    name(filter: String): String!
+}
 
-"""Input type for searching universities""" input UniversityInput { name: String! status: Status }
+"""Input type for searching universities"""
+input UniversityInput {
+    name: String!
+    status: Status
+}
 
-"""Custom directive for metadata tagging""" directive @metadata(tag: String!) on OBJECT | INTERFACE | FIELD_DEFINITION
+"""Custom directive for metadata tagging"""
+directive @metadata(tag: String!) on OBJECT | INTERFACE | FIELD_DEFINITION
 
-"""Custom directive for rate limiting queries""" directive @rateLimit(max: Int! = 10) on QUERY
+"""Custom directive for rate limiting queries"""
+directive @rateLimit(max: Int! = 10) on QUERY
+
+"""Mutation for university operations"""
+type Mutation {
+    createUniversity(name: String!, description: String, status: Status!, ranking: Int!): University!
+    createCampus(id: ID!, name: String!): Campus!
+}

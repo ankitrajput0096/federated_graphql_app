@@ -5,6 +5,7 @@ import com.subgraph.university.model.Status;
 import com.subgraph.university.model.University;
 import com.subgraph.university.entity.UniversityEntity;
 import com.subgraph.university.entity.CampusEntity;
+import com.subgraph.university.model.UniversityInput;
 import com.subgraph.university.repository.CampusRepository;
 import com.subgraph.university.repository.UniversityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,5 +69,24 @@ public class UniversityService {
                 e.getCreatedAt() != null ? e.getCreatedAt() : LocalDate.now(),
                 e.getRanking()
         );
+    }
+
+    public University createUniversity(String name, String description, String status, Integer ranking) {
+        UniversityEntity entity = new UniversityEntity();
+        entity.setName(name);
+        entity.setDescription(description);
+        entity.setStatus(Status.valueOf(status));
+        entity.setRanking(ranking);
+        entity.setCreatedAt(LocalDate.now());
+        entity = repository.save(entity);
+        return new University(entity.getId(), entity.getName(), entity.getDescription(), entity.getStatus(), entity.getCreatedAt(), entity.getRanking());
+    }
+
+    public Campus createCampus(Long id, String name) {
+        CampusEntity entity = new CampusEntity();
+        entity.setId(id);
+        entity.setName(name);
+        entity = campusRepository.save(entity);
+        return new Campus(entity.getId(), entity.getName());
     }
 }

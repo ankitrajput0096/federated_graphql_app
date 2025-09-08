@@ -1,14 +1,18 @@
 package com.subgraph.university;
 
+import com.subgraph.university.config.CustomInstrumentation;
+import com.subgraph.university.config.ErrorHandler;
 import com.subgraph.university.config.MetadataDirective;
 import com.subgraph.university.model.Campus;
 import com.subgraph.university.model.CustomDateScalar;
 import com.subgraph.university.model.University;
+import graphql.execution.instrumentation.Instrumentation;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.data.federation.FederationSchemaFactory;
+import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 @SpringBootApplication
@@ -60,5 +64,10 @@ public class UniversityApplication {
 					}
 					return null;
 				}));
+	}
+
+	@Bean
+	public Instrumentation instrumentation(CustomInstrumentation customInstrumentation) {
+		return customInstrumentation;
 	}
 }
