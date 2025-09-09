@@ -1,3 +1,5 @@
+# Federation Support: The schema extends with the @link directive to import
+# Apollo Federation directives (@key, @tag) for entity resolution across services.
 extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@tag"])
 
 """Query root for university operations"""
@@ -49,9 +51,6 @@ input UniversityInput {
 
 """Custom directive for metadata tagging"""
 directive @metadata(tag: String!) on OBJECT | INTERFACE | FIELD_DEFINITION
-
-"""Custom directive for rate limiting queries"""
-directive @rateLimit(max: Int! = 10) on QUERY
 
 """Mutation for university operations"""
 type Mutation {

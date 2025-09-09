@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+/**
+ *  This file implements a custom GraphQL error handler to manage exceptions during data fetching.
+ */
 @Component
 public class ErrorHandler implements DataFetcherExceptionResolver {
 

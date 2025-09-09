@@ -20,15 +20,4 @@ public record University(
         LocalDate createdAt,
         Integer ranking
 ) {
-    public University(Long id, String name) {
-        this(id, name, null, Status.ACTIVE, LocalDate.now(), null);
-    }
-
-    // Resolver for name(filter: String): String! to satisfy Entity interface
-    public String name(String filter) {
-        if (filter == null || name == null) {
-            return name;
-        }
-        return name.contains(filter) ? name : null;
-    }
 }

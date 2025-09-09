@@ -20,6 +20,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * Intercepts the GraphQL query execution at the start to validate syntax and enforce query depth limits.
+ * Acts as a gatekeeper, rejecting invalid or overly complex queries before they reach the resolvers,
+ * improving security and performance.
+ */
 @Component
 public class CustomInstrumentation implements Instrumentation {
     private static final Logger logger = LoggerFactory.getLogger(CustomInstrumentation.class);

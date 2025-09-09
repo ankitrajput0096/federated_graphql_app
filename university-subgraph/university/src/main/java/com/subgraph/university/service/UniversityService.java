@@ -5,7 +5,6 @@ import com.subgraph.university.model.Status;
 import com.subgraph.university.model.University;
 import com.subgraph.university.entity.UniversityEntity;
 import com.subgraph.university.entity.CampusEntity;
-import com.subgraph.university.model.UniversityInput;
 import com.subgraph.university.repository.CampusRepository;
 import com.subgraph.university.repository.UniversityRepository;
 import org.springframework.beans.factory.annotation.Autowired;

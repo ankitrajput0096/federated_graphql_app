@@ -1,7 +1,6 @@
 package com.subgraph.university;
 
 import com.subgraph.university.config.CustomInstrumentation;
-import com.subgraph.university.config.ErrorHandler;
 import com.subgraph.university.config.MetadataDirective;
 import com.subgraph.university.model.Campus;
 import com.subgraph.university.model.CustomDateScalar;
@@ -12,7 +11,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.data.federation.FederationSchemaFactory;
-import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 @SpringBootApplication
@@ -31,16 +29,29 @@ public class UniversityApplication {
 		SpringApplication.run(UniversityApplication.class, args);
 	}
 
+	/**
+	 * Configures the GraphQL schema to use a federated schema factory.
+	 * @return GraphQlSourceBuilderCustomizer
+	 */
 	@Bean
 	public GraphQlSourceBuilderCustomizer customizer(FederationSchemaFactory factory) {
 		return builder -> builder.schemaFactory(factory::createGraphQLSchema);
 	}
 
+	/**
+	 * Provides a FederationSchemaFactory bean for creating a federated GraphQL schema.
+	 * @return FederationSchemaFactory
+	 */
 	@Bean
 	public FederationSchemaFactory federationSchemaFactory() {
 		return new FederationSchemaFactory();
 	}
 
+	/**
+	 * Configures the GraphQL schema’s runtime wiring, registering the custom scalar,
+	 * directive, and type resolvers for polymorphic types.
+	 * @return RuntimeWiringConfigurer
+	 */
 	@Bean
 	public RuntimeWiringConfigurer runtimeWiringConfigurer() {
 		return wiring -> wiring
@@ -66,6 +77,10 @@ public class UniversityApplication {
 				}));
 	}
 
+	/**
+	 * Registers the CustomInstrumentation class (from CustomInstrumentation.java) as a GraphQL Instrumentation bean.
+	 * @return Instrumentation
+	 */
 	@Bean
 	public Instrumentation instrumentation(CustomInstrumentation customInstrumentation) {
 		return customInstrumentation;

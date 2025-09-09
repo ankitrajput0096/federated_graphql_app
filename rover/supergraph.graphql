@@ -3,6 +3,7 @@ schema
   @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
 {
   query: Query
+  mutation: Mutation
 }
 
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
@@ -60,6 +61,14 @@ enum link__Purpose {
   `EXECUTION` features provide metadata necessary for operation execution.
   """
   EXECUTION
+}
+
+"""Mutation for university operations"""
+type Mutation
+  @join__type(graph: UNIVERSITY)
+{
+  createUniversity(name: String!, description: String, status: Status!, ranking: Int!): University!
+  createCampus(id: ID!, name: String!): Campus!
 }
 
 """Query root for university operations"""
