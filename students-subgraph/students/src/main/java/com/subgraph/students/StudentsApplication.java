@@ -1,12 +1,17 @@
 package com.subgraph.students;
 
+import com.subgraph.students.config.CustomGpaScalar;
+import com.subgraph.students.config.RestTemplateConfig;
+import com.subgraph.students.config.TypeResolverConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.graphql.data.federation.FederationSchemaFactory;
 
 @SpringBootApplication
+@Import({CustomGpaScalar.class, TypeResolverConfig.class, RestTemplateConfig.class})
 public class StudentsApplication {
 
 	/**

@@ -41,6 +41,32 @@ interface Entity
   name(filter: String): String!
 }
 
+"""Custom scalar for GPA (validated float)"""
+scalar GPA
+  @join__type(graph: STUDENTS)
+
+"""Grade object representing a student's academic performance"""
+type Grade implements Rateable
+  @join__implements(graph: STUDENTS, interface: "Rateable")
+  @join__type(graph: STUDENTS)
+{
+  studentId: String!
+  grade: String!
+  gpa: GPA!
+
+  """Rating derived from GPA, filtered by minimum value"""
+  rating(filter: Int): Int
+}
+
+"""Enum for grade levels"""
+enum GradeLevel
+  @join__type(graph: STUDENTS)
+{
+  A @join__enumValue(graph: STUDENTS)
+  B @join__enumValue(graph: STUDENTS)
+  C @join__enumValue(graph: STUDENTS)
+}
+
 scalar join__FieldSet
 
 enum join__Graph {
@@ -71,19 +97,30 @@ type Mutation
   createCampus(id: ID!, name: String!): Campus!
 }
 
-"""Query root for university operations"""
+"""Query type for student-related operations"""
 type Query
   @join__type(graph: STUDENTS)
   @join__type(graph: TEACHERS)
   @join__type(graph: UNIVERSITY)
 {
+  """Fetch students by university ID"""
   student(universityId: ID!): [Student!]! @join__field(graph: STUDENTS)
+
+  """Fetch all students across all universities"""
   allStudents: [Student!]! @join__field(graph: STUDENTS)
   teacher(universityId: ID!): [Teacher!]! @join__field(graph: TEACHERS)
   allTeachers: [Teacher!]! @join__field(graph: TEACHERS)
   university(id: ID!): University @join__field(graph: UNIVERSITY)
   universities: [University!]! @join__field(graph: UNIVERSITY)
   searchUniversities(input: UniversityInput!): [SearchResult!]! @join__field(graph: UNIVERSITY)
+}
+
+"""Interface for types that can be rated"""
+interface Rateable
+  @join__type(graph: STUDENTS)
+{
+  """Get rating with optional filter"""
+  rating(filter: Int): Int
 }
 
 """Union type for search results"""
@@ -101,13 +138,30 @@ enum Status
   INACTIVE @join__enumValue(graph: UNIVERSITY)
 }
 
+"""Student type with grade information"""
 type Student
   @join__type(graph: STUDENTS)
 {
   id: ID!
   text: String
   starRating: Int!
+  grade: Grade!
 }
+
+"""Input object for filtering students"""
+input StudentFilter
+  @join__type(graph: STUDENTS)
+{
+  universityId: ID!
+  minStar: Int
+}
+
+"""Union of student-related types"""
+union StudentInfo
+  @join__type(graph: STUDENTS)
+  @join__unionMember(graph: STUDENTS, member: "Student")
+  @join__unionMember(graph: STUDENTS, member: "Grade")
+ = Student | Grade
 
 type Teacher
   @join__type(graph: TEACHERS)
@@ -117,7 +171,7 @@ type Teacher
   starRating: Int!
 }
 
-"""Represents a university entity"""
+"""University type extended for federation"""
 type University
   @join__type(graph: STUDENTS, key: "id", extension: true)
   @join__type(graph: TEACHERS, key: "id", extension: true)

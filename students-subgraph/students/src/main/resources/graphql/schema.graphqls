@@ -1,15 +1,98 @@
-type Query { 
+"""
+Custom scalar for GPA (validated float)
+"""
+scalar GPA
+
+"""
+Directive to add metadata to types
+"""
+directive @metadata(tag: String) on INTERFACE
+
+"""
+Interface for types that can be rated
+"""
+interface Rateable @metadata(tag: "ratable") {
+    """
+    Get rating with optional filter
+    """
+    rating(filter: Int): Int
+}
+
+"""
+Grade object representing a student's academic performance
+"""
+type Grade implements Rateable {
+    studentId: String!
+    grade: String!
+    gpa: GPA!
+    """
+    Rating derived from GPA, filtered by minimum value
+    """
+    rating(filter: Int): Int
+}
+
+"""
+Student type with grade information
+"""
+type Student {
+    id: ID!
+    text: String
+    starRating: Int!
+    grade: Grade!
+}
+
+"""
+Query type for student-related operations
+"""
+type Query {
+    """
+    Fetch students by university ID
+    """
     student(universityId: ID!): [Student!]!
+    """
+    Fetch all students across all universities
+    """
     allStudents: [Student!]!
 }
 
+"""University type extended for federation"""
 type University @key(fields: "id") @extends {
-    id: ID! @external
-    student: [Student!]!
+id: ID! @external
+student: [Student!]!
 }
 
-type Student {
-    id: ID!,
-    text: String
-    starRating: Int!
+
+
+"""
+Enum for grade levels
+"""
+enum GradeLevel {
+A
+B
+C
 }
+
+
+"""
+Union of student-related types
+"""
+union StudentInfo = Student | Grade
+
+"""
+Input object for filtering students
+"""
+input StudentFilter {
+universityId: ID!
+minStar: Int
+}
+
+"""
+Directive to simulate async fetching with optional delay (ms)
+"""
+directive @asyncFetch(delay: Int = 0) on FIELD_DEFINITION
+
+"""
+Directive to enable caching on queries
+"""
+directive @cache(ttl: Int) on QUERY
+

@@ -22,6 +22,15 @@ services:
     networks:
       - graphql-network
 
+  grades:
+    build:
+      context: ./grades
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    networks:
+      - graphql-network
+
   students:
     build:
       context: ./students-subgraph
@@ -30,6 +39,8 @@ services:
       - "8081:8081"
     networks:
       - graphql-network
+    depends_on:
+      - grades
 
   teachers:
     build:
