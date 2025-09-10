@@ -4,6 +4,7 @@ schema
 {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
@@ -58,6 +59,15 @@ type Grade implements Rateable
   rating(filter: Int): Int
 }
 
+"""Input object for grade information"""
+input GradeInput
+  @join__type(graph: STUDENTS)
+{
+  studentId: String!
+  grade: String!
+  gpa: GPA!
+}
+
 """Enum for grade levels"""
 enum GradeLevel
   @join__type(graph: STUDENTS)
@@ -89,12 +99,18 @@ enum link__Purpose {
   EXECUTION
 }
 
-"""Mutation for university operations"""
+"""Mutation type for student-related operations"""
 type Mutation
+  @join__type(graph: STUDENTS)
   @join__type(graph: UNIVERSITY)
 {
-  createUniversity(name: String!, description: String, status: Status!, ranking: Int!): University!
-  createCampus(id: ID!, name: String!): Campus!
+  """Add a new student to a university"""
+  addStudent(input: StudentInput!): Student! @join__field(graph: STUDENTS)
+
+  """Update an existing student's details"""
+  updateStudent(input: StudentInput!): Student! @join__field(graph: STUDENTS)
+  createUniversity(name: String!, description: String, status: Status!, ranking: Int!): University! @join__field(graph: UNIVERSITY)
+  createCampus(id: ID!, name: String!): Campus! @join__field(graph: UNIVERSITY)
 }
 
 """Query type for student-related operations"""
@@ -146,22 +162,28 @@ type Student
   text: String
   starRating: Int!
   grade: Grade!
+  status: GradeLevel!
 }
 
-"""Input object for filtering students"""
-input StudentFilter
+"""Input object for adding or updating a student"""
+input StudentInput
   @join__type(graph: STUDENTS)
 {
+  id: ID!
+  text: String
+  starRating: Int!
   universityId: ID!
-  minStar: Int
+  status: GradeLevel!
+  grade: GradeInput
 }
 
-"""Union of student-related types"""
-union StudentInfo
+"""Subscription type for student-related updates"""
+type Subscription
   @join__type(graph: STUDENTS)
-  @join__unionMember(graph: STUDENTS, member: "Student")
-  @join__unionMember(graph: STUDENTS, member: "Grade")
- = Student | Grade
+{
+  """Subscribe to student updates for a student"""
+  studentUpdated(studentId: ID!): Student!
+}
 
 type Teacher
   @join__type(graph: TEACHERS)

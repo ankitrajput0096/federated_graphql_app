@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 public class GradeController {
     private final Map<String, Grade> grades = Map.of(
             "1020", new Grade("1020", "A", 4.0f),
-            "1021", new Grade("1021", "B", 3.0f) // Add more mock data if needed
+            "1021", new Grade("1021", "B", 3.0f), // Add more mock data if needed
+            "1031", new Grade("1031", "B", 3.0f), // Add more mock data if needed
+            "1032", new Grade("1032", "B", 3.0f) // Add more mock data if needed
     );
 
     @GetMapping("/{studentId}")

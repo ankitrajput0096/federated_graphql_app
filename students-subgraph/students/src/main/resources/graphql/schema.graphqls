@@ -39,6 +39,7 @@ type Student {
     text: String
     starRating: Int!
     grade: Grade!
+    status: GradeLevel!
 }
 
 """
@@ -55,44 +56,64 @@ type Query {
     allStudents: [Student!]!
 }
 
-"""University type extended for federation"""
-type University @key(fields: "id") @extends {
-id: ID! @external
-student: [Student!]!
+"""
+Mutation type for student-related operations
+"""
+type Mutation {
+    """
+    Add a new student to a university
+    """
+    addStudent(input: StudentInput!): Student!
+    """
+    Update an existing student's details
+    """
+    updateStudent(input: StudentInput!): Student!
 }
 
+"""
+Subscription type for student-related updates
+"""
+type Subscription {
+    """
+    Subscribe to student updates for a student
+    """
+    studentUpdated(studentId: ID!): Student!
+}
 
+"""
+University type extended for federation
+"""
+type University @key(fields: "id") @extends {
+    id: ID! @external
+    student: [Student!]!
+}
 
 """
 Enum for grade levels
 """
 enum GradeLevel {
-A
-B
-C
-}
-
-
-"""
-Union of student-related types
-"""
-union StudentInfo = Student | Grade
-
-"""
-Input object for filtering students
-"""
-input StudentFilter {
-universityId: ID!
-minStar: Int
+    A
+    B
+    C
 }
 
 """
-Directive to simulate async fetching with optional delay (ms)
+Input object for adding or updating a student
 """
-directive @asyncFetch(delay: Int = 0) on FIELD_DEFINITION
+input StudentInput {
+    id: ID!
+    text: String
+    starRating: Int!
+    universityId: ID!
+    status: GradeLevel!
+    grade: GradeInput
+}
 
 """
-Directive to enable caching on queries
+Input object for grade information
 """
-directive @cache(ttl: Int) on QUERY
-
+input GradeInput {
+    studentId: String!
+    grade: String!
+    gpa: GPA!
+}

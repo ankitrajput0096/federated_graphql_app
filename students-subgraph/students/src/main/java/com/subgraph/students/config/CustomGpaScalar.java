@@ -42,20 +42,42 @@ public class CustomGpaScalar implements RuntimeWiringConfigurer {
                                 return value;
                             }
                             throw new CoercingParseValueException("GPA must be between 0.0 and 4.0, got " + value);
+                        } else if (input instanceof Double) {
+                            float value = ((Double) input).floatValue();
+                            if (value >= 0.0f && value <= 4.0f) {
+                                return value;
+                            }
+                            throw new CoercingParseValueException("GPA must be between 0.0 and 4.0, got " + value);
+                        } else if (input instanceof String) {
+                            try {
+                                float value = Float.parseFloat((String) input);
+                                if (value >= 0.0f && value <= 4.0f) {
+                                    return value;
+                                }
+                                throw new CoercingParseValueException("GPA must be between 0.0 and 4.0, got " + value);
+                            } catch (NumberFormatException e) {
+                                throw new CoercingParseValueException("Expected a valid Float for GPA, got " + input);
+                            }
                         }
-                        throw new CoercingParseValueException("Expected a Float for GPA, got " + (input != null ? input.getClass().getSimpleName() : "null"));
+                        throw new CoercingParseValueException("Expected a Float, Double, or String for GPA, got " + (input != null ? input.getClass().getSimpleName() : "null"));
                     }
 
                     @Override
                     public Float parseLiteral(Object input) throws CoercingParseLiteralException {
-                        if (input instanceof Float) {
-                            float value = (Float) input;
+                        if (input instanceof graphql.language.FloatValue) {
+                            float value = ((graphql.language.FloatValue) input).getValue().floatValue();
+                            if (value >= 0.0f && value <= 4.0f) {
+                                return value;
+                            }
+                            throw new CoercingParseLiteralException("GPA must be between 0.0 and 4.0, got " + value);
+                        } else if (input instanceof graphql.language.IntValue) {
+                            float value = ((graphql.language.IntValue) input).getValue().floatValue();
                             if (value >= 0.0f && value <= 4.0f) {
                                 return value;
                             }
                             throw new CoercingParseLiteralException("GPA must be between 0.0 and 4.0, got " + value);
                         }
-                        throw new CoercingParseLiteralException("Expected a Float literal for GPA, got " + (input != null ? input.getClass().getSimpleName() : "null"));
+                        throw new CoercingParseLiteralException("Expected a FloatValue or IntValue for GPA, got " + (input != null ? input.getClass().getSimpleName() : "null"));
                     }
                 })
                 .build();

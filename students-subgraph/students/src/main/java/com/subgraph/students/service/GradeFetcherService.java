@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -31,8 +32,13 @@ public class GradeFetcherService {
     }
 
     public List<Grade> fetchBatchGrades(List<String> studentIds) {
-        // RestTemplate expects array for POST body; Grade[].class for response
-        Grade[] grades = restTemplate.postForObject(gradesBaseUrl + "/batch", studentIds, Grade[].class);
-        return grades != null ? List.of(grades) : List.of();
+        log.info("Fetching batch grades for student IDs: {}", studentIds);
+        try {
+            Grade[] grades = restTemplate.postForObject(gradesBaseUrl + "/batch", studentIds, Grade[].class);
+            return grades != null ? Arrays.asList(grades) : List.of();
+        } catch (Exception e) {
+            log.error("Failed to fetch batch grades: {}", e.getMessage());
+            return List.of();
+        }
     }
 }
