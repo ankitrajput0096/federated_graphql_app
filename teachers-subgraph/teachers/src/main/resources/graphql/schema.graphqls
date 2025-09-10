@@ -1,22 +1,52 @@
-type Query { 
-    teacher(universityId: ID!): [Teacher!]!
-    allTeachers: [Teacher!]!
-}
-
+# Extended University for teachers
 type University @key(fields: "id") @extends {
     id: ID! @external
     teacher: [Teacher!]!
 }
 
+# Teacher type with enriched fields
 type Teacher {
     id: ID!
-    text: String
+    text: String @transform(format: "uppercase") # Custom directive to modify output
     starRating: Int!
-    classes: [Class!]! # Added for integration
+    classes: [Class!]!
+    level: TeacherLevel! # Enum
+    details(filter: String): String @log(level: "INFO") # Field with args and directive
 }
 
-type Class {
+# Object type for Class, implements Teachable
+type Class implements Teachable {
     id: ID!
-    subject: String!
+    subject: String! @transform(format: "capitalize")
     teacherId: String!
+    duration: Time! # Custom scalar
+    details(filter: String): String
+}
+
+# Custom scalar for time (e.g., HH:mm format)
+scalar Time
+
+# Enum for teacher levels
+enum TeacherLevel {
+    JUNIOR
+    SENIOR
+}
+
+# Interface for teachable entities
+interface Teachable @metadata(tag: "teachable") {
+    details(filter: String): String
+}
+
+# Custom directive to transform field output (e.g., uppercase, capitalize)
+directive @transform(format: String!) on FIELD_DEFINITION
+
+# Custom directive for logging queries/fields
+directive @log(level: String = "INFO") on FIELD_DEFINITION | QUERY
+
+# Custom directive for metadata
+directive @metadata(tag: String!) on INTERFACE | OBJECT
+
+type Query {
+    teacher(universityId: ID!): [Teacher!]!
+    allTeachers: [Teacher!]!
 }

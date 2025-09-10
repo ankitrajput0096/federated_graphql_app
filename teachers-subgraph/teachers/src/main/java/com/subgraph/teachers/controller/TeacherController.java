@@ -41,6 +41,18 @@ public class TeacherController {
         return classFetcherService.fetchClasses(teacher.id()).toFuture();
     }
 
+    @SchemaMapping(typeName = "Teacher")
+    public String details(Teacher teacher, @Argument String filter) {
+        String details = "Teacher: " + teacher.id() + ", Level: " + teacher.level();
+        return filter != null ? details + ", Filter: " + filter : details;
+    }
+
+    @SchemaMapping(typeName = "Class")
+    public String details(Class clazz, @Argument String filter) {
+        String details = "Class: " + clazz.id() + ", Subject: " + clazz.subject();
+        return filter != null ? details + ", Filter: " + filter : details;
+    }
+
     @QueryMapping
     public CompletableFuture<List<Teacher>> teacher(@Argument Long universityId) {
         log.info("Querying teachers for universityId: {}", universityId);

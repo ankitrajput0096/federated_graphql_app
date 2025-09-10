@@ -19,14 +19,14 @@ public class ClassFetcherService {
     }
 
     public Mono<List<Class>> fetchClasses(String teacherId) {
-        String query = String.format("query { classes(teacherId: \"%s\") { id subject teacherId } }", teacherId);
+        String query = String.format("query { classes(teacherId: \"%s\") { id subject teacherId duration } }", teacherId);
         return graphQlClient.document(query)
                 .retrieve("classes")
                 .toEntityList(Class.class);
     }
 
     public Mono<List<Class>> fetchBatchClasses(List<String> teacherIds) {
-        String query = String.format("query { batchClasses(teacherIds: %s) { id subject teacherId } }", teacherIds);
+        String query = String.format("query { batchClasses(teacherIds: %s) { id subject teacherId duration } }", teacherIds);
         return graphQlClient.document(query)
                 .retrieve("batchClasses")
                 .toEntityList(Class.class);

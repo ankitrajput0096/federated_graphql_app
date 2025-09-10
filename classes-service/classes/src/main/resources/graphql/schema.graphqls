@@ -7,4 +7,8 @@ type Class {
     id: ID!
     subject: String!
     teacherId: String!
+    duration: Time! # Custom scalar
 }
+
+# Custom scalar for time (e.g., HH:mm format)
+scalar Time

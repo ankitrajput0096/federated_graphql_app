@@ -30,12 +30,15 @@ type Campus implements Entity
   name(filter: String): String!
 }
 
-type Class
+type Class implements Teachable
+  @join__implements(graph: TEACHERS, interface: "Teachable")
   @join__type(graph: TEACHERS)
 {
   id: ID!
   subject: String!
   teacherId: String!
+  duration: Time!
+  details(filter: String): String
 }
 
 """Custom scalar for date representation"""
@@ -193,6 +196,12 @@ type Subscription
   studentUpdated(studentId: ID!): Student!
 }
 
+interface Teachable
+  @join__type(graph: TEACHERS)
+{
+  details(filter: String): String
+}
+
 type Teacher
   @join__type(graph: TEACHERS)
 {
@@ -200,7 +209,19 @@ type Teacher
   text: String
   starRating: Int!
   classes: [Class!]!
+  level: TeacherLevel!
+  details(filter: String): String
 }
+
+enum TeacherLevel
+  @join__type(graph: TEACHERS)
+{
+  JUNIOR @join__enumValue(graph: TEACHERS)
+  SENIOR @join__enumValue(graph: TEACHERS)
+}
+
+scalar Time
+  @join__type(graph: TEACHERS)
 
 """University type extended for federation"""
 type University

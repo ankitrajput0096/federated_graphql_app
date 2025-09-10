@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-webflux") // For Reactor and async
 	implementation("org.springframework.graphql:spring-graphql") // For GraphQlClient
+	implementation("org.slf4j:slf4j-api") // For logging
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

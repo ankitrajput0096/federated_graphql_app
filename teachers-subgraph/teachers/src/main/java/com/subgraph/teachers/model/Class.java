@@ -1,4 +1,12 @@
 package com.subgraph.teachers.model;
 
 
-public record Class(String id, String subject, String teacherId) {}
+import java.time.LocalTime;
+
+public record Class(String id, String subject, String teacherId, LocalTime duration) {
+    public Class {
+        if (duration == null) {
+            throw new IllegalArgumentException("Duration cannot be null");
+        }
+    }
+}
