@@ -42,6 +42,15 @@ services:
     depends_on:
       - grades
 
+  classes:
+      build:
+        context: ./classes-service
+        dockerfile: Dockerfile # Create if needed: standard Spring Boot Dockerfile
+      ports:
+        - "8085:8085"
+      networks:
+        - graphql-network
+
   teachers:
     build:
       context: ./teachers-subgraph
@@ -50,6 +59,8 @@ services:
       - "8082:8082"
     networks:
       - graphql-network
+    depends_on:
+        - classes # Add dependency
 
   rover:
     image: ubuntu:20.04

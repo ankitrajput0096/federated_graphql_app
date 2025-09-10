@@ -30,6 +30,14 @@ type Campus implements Entity
   name(filter: String): String!
 }
 
+type Class
+  @join__type(graph: TEACHERS)
+{
+  id: ID!
+  subject: String!
+  teacherId: String!
+}
+
 """Custom scalar for date representation"""
 scalar Date
   @join__type(graph: UNIVERSITY)
@@ -191,6 +199,7 @@ type Teacher
   id: ID!
   text: String
   starRating: Int!
+  classes: [Class!]!
 }
 
 """University type extended for federation"""

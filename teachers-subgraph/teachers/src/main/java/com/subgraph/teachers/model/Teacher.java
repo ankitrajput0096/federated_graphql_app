@@ -1,8 +1,11 @@
 package com.subgraph.teachers.model;
 
-public record Teacher(String id, String text, Integer starRating) {
+import java.util.ArrayList;
+import java.util.List;
+
+public record Teacher(String id, String text, Integer starRating, List<Class> classes) {
 
   public Teacher(String id, Integer starRating) {
-    this(id, null, starRating);
+    this(id, null, starRating, null);
   }
 }

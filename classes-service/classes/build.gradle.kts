@@ -4,9 +4,9 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "com.subgraph"
+group = "com.graphql"
 version = "0.0.1-SNAPSHOT"
-description = "This is demo project for teachers graphql subgraph"
+description = "Downstream graphql service for classes."
 
 java {
 	toolchain {
@@ -25,11 +25,8 @@ repositories {
 }
 
 dependencies {
-	implementation("com.apollographql.federation:federation-graphql-java-support:4.2.0")
 	implementation("org.springframework.boot:spring-boot-starter-graphql")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-webflux") // For Reactor and async
-	implementation("org.springframework.graphql:spring-graphql") // For GraphQlClient
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
