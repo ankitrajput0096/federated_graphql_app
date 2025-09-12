@@ -1,6 +1,6 @@
 # Federated GraphQL Application
 
-This project implements a federated GraphQL architecture using **Spring Boot**, **GraphQL**, **PostgreSQL**, and **React**. It consists of multiple subgraphs (`university`, `students`, `teachers`, `classes`, and `grades`) orchestrated by **Apollo Rover** for supergraph composition and **Apollo Router** for serving the federated API. The frontend is a React-based dashboard, and all services are containerized using **Docker Compose**.
+This project implements a federated GraphQL architecture using **Spring Boot**, **GraphQL**, **PostgreSQL**, and **React**. It consists of multiple subgraphs (`university`, `students`, `teachers`, `classes`, and `grades`) orchestrated by **Apollo Rover** for supergraph composition and **Apollo Router** for serving the federated API. The frontend is a React-based dashboard which also has Jest as it's testing framework, and all services are containerized using **Docker Compose**.
 
 ---
 
@@ -12,7 +12,7 @@ The application models a university management system with the following compone
 - **Teachers Subgraph**: Manages teacher data and their associated classes, with custom directives for data transformation and logging.
 - **Classes Subgraph**: Manages class-related data, linked to teachers.
 - **Grades Subgraph**: Manages student grades and GPA calculations.
-- **Frontend (Student Dashboard)**: A React-based UI running at `localhost:3000` for interacting with the federated API.
+- **Frontend (Student Dashboard)**: A React-based UI running at `localhost:3000` for interacting with the federated API along with Jest as it's testing framework.
 - **PostgreSQL**: Stores university and related data.
 - **Apollo Router**: Serves the federated GraphQL API at `localhost:4000/graphql`.
 - **Apollo Rover**: Composes the supergraph schema from individual subgraph schemas.
