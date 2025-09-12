@@ -1,0 +1,365 @@
+.App {
+  text-align: center;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.App-header {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  padding: 20px;
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tabs button {
+  padding: 12px 24px;
+  margin: 0 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tabs button:hover {
+  color: #2575fc;
+}
+
+.tabs button.active {
+  color: #2575fc;
+  border-bottom: 3px solid #2575fc;
+}
+
+.tab-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.added-student-confirmation {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+  border-left: 4px solid #4caf50;
+}
+
+.add-student-form {
+  text-align: left;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.form-section h3 {
+  margin-top: 0;
+  color: #2575fc;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.student-detail-view {
+  display: flex;
+  justify-content: center;
+}
+
+.student-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.student-card h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.student-info {
+  margin-top: 15px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 600;
+  color: #666;
+}
+
+.value {
+  color: #333;
+}
+
+.status-badge {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.subscription-controls {
+  margin-bottom: 20px;
+}
+
+.student-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.student-selection label {
+  font-weight: 600;
+}
+
+.student-selection input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.loading {
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.students-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.student-subscription {
+  background-color: #fff3e0;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #ff9800;
+}
+
+.subscription-update {
+  background-color: #fff8e1;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .tabs {
+    flex-direction: column;
+  }
+  
+  .tabs button {
+    margin: 5px 0;
+  }
+  
+  .students-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.error.warning {
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+  color: #e65100;
+}
+
+.university-input-section {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.university-input-section .form-group {
+  margin-bottom: 0;
+}
+
+.search-controls {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.search-controls input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-controls button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.search-controls button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-controls button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.students-list-container h3 {
+  margin-top: 20px;
+  color: #333;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.update-student-form {
+  text-align: left;
+}
+
+.university-selection {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.student-selection {
+  background-color: #e8f5e9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.student-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.update-student-form .form-group input:disabled {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.added-student-confirmation {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+  border-left: 4px solid #4caf50;
+}
+
+.added-student-confirmation .student-card {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
