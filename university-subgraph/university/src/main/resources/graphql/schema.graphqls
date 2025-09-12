@@ -1,59 +1,398 @@
-# Federation Support: The schema extends with the @link directive to import
-# Apollo Federation directives (@key, @tag) for entity resolution across services.
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@tag"])
+# Federated GraphQL Application
 
-"""Query root for university operations"""
+This project implements a federated GraphQL architecture using **Spring Boot**, **GraphQL**, **PostgreSQL**, and **React**. It consists of multiple subgraphs (`university`, `students`, `teachers`, `classes`, and `grades`) orchestrated by **Apollo Rover** for supergraph composition and **Apollo Router** for serving the federated API. The frontend is a React-based dashboard, and all services are containerized using **Docker Compose**.
+
+---
+
+## Project Overview
+
+The application models a university management system with the following components:
+- **University Subgraph**: Manages university and campus data, including queries and mutations for creating and searching universities.
+- **Students Subgraph**: Handles student data, including grades, with queries, mutations, and subscriptions for real-time updates.
+- **Teachers Subgraph**: Manages teacher data and their associated classes, with custom directives for data transformation and logging.
+- **Classes Subgraph**: Manages class-related data, linked to teachers.
+- **Grades Subgraph**: Manages student grades and GPA calculations.
+- **Frontend (Student Dashboard)**: A React-based UI running at `localhost:3000` for interacting with the federated API.
+- **PostgreSQL**: Stores university and related data.
+- **Apollo Router**: Serves the federated GraphQL API at `localhost:4000/graphql`.
+- **Apollo Rover**: Composes the supergraph schema from individual subgraph schemas.
+
+---
+
+## Flow Diagram
+
+The following ASCII diagram illustrates the high-level flow of the project setup and runtime process:
+
+```
++-----------------------------------+
+| Host Machine                      |
+|                                   |
+| +-------------------+             |
+| | Build Subgraphs   |             |
+| | - University JAR  |             |
+| | - Students JAR    |             |
+| | - Teachers JAR    |             |
+| | - Classes JAR     |             |
+| | - Grades JAR      |             |
+| +-------------------+             |
+|            |                      |
+|            v                      |
+| +-------------------+             |
+| | Configure Files   |             |
+| | - supergraph.yaml |             |
+| | - router.yaml     |             |
+| | - schema.graphqls |             |
+| +-------------------+             |
+|            |                      |
+|            v                      |
+| +-------------------+             |
+| | docker-compose up |             |
+| +-------------------+             |
+|            |                      |
++------------|----------------------+
+             v
++-----------------------------------+
+| Docker Environment                |
+|                                   |
+| +-------------------+             |
+| | University Service| <--+--------| HTTP (8080/graphql)
+| | (Subgraph)        |    |        |
+| +-------------------+    |        |
+|                          |        |
+| +-------------------+    |        |
+| | Students Service  | <--+--------| HTTP (8081/graphql)
+| | (Subgraph)        |    |        |
+| +-------------------+    |        |
+|                          |        |
+| +-------------------+    |        |
+| | Teachers Service  | <--+--------| HTTP (8082/graphql)
+| +-------------------+    |        |
+|                          |        |
+| +-------------------+    |        |
+| | Classes Service   | <--+--------| HTTP (8085/graphql)
+| +-------------------+    |        |
+|                          |        |
+| +-------------------+    |        |
+| | Grades Service    | <--+--------| HTTP (8084/graphql)
+| +-------------------+    |        |
+|                          |        |
+| +-------------------+    |        |
+| | Postgres (DB)     | <--+--------| Port 5432
+| +-------------------+    |        |
+|                          |        |
+| +-------------------+    |        |
+| | Student Dashboard | <--+--------| HTTP (3000)
+| | (React)           |    |        |
+| +-------------------+    |        |
+|                          |        |
+| +---------------------+  |        |
+| | Rover Service       |  |        |
+| | - Composes supergraph.graphql | |
+| +---------------------+  |        |
+|            |             |        |
+|            v             |        |
+| +-------------------+    |        |
+| | Router Service    | <--+--------| HTTP (4000/graphql)
+| | - Serves Queries  |             |
+| +-------------------+             |
+|                                   |
++-----------------------------------+
+             ^
+             |
++------------|----------------------+
+| Host Machine                      |
+|                                   |
+| +-------------------+             |
+| | Query Supergraph  |             |
+| | (curl or client)  |             |
+| +-------------------+             |
+|                                   |
++-----------------------------------+
+```
+
+---
+
+## Production Architecture Diagram
+
+The production architecture leverages AWS services and Apollo GraphOS for schema management and delivery:
+
+```
++------------------------------------+
+| Clients (Web/Mobile Apps, Tools)   |
+|                                    |
+| +-----------------------+           |
+| | GraphQL Queries       |           |
+| | (e.g., curl, Postman) |           |
+| +-----------------------+           |
+|            |                       |
+|            v                       |
++------------|-----------------------+
+             v
++---------------------------------------------------+
+| Edge Layer (AWS API Gateway)                       |
+| - HTTPS: api.example.com                          |
+| - Rate Limiting, WAF                              |
+| - Cognito Auth / API Keys                         |
+| - Routes to Router ALB                            |
++------------|--------------------------------------+
+             v
++----------------------------------------+
+| API Layer (Apollo Router)              |
+| - EKS Pods (2-10 replicas, HPA)        |
+| - Polls GraphOS for supergraph.graphql |
+| - Routes queries to subgraphs          |
+| - Telemetry: Prometheus/Grafana        |
+| - Health: /health (8088)               |
++------------|---------------------------+
+             | |
+             v v
++------------------------------------|-----------------------+
+| Subgraphs Layer (EKS Pods)         |                       |
+| +-------------------+              |                       |
+| | University Service| <--- ALB (8080/graphql)            |
+| | - Spring Boot JAR |                                   |
+| +-------------------+                                   |
+| +-------------------+                                   |
+| | Students Service  | <--- ALB (8081/graphql)           |
+| | - Spring Boot JAR |                                   |
+| +-------------------+                                   |
+| +-------------------+                                   |
+| | Teachers Service  | <--- ALB (8082/graphql)           |
+| | - Spring Boot JAR |                                   |
+| +-------------------+                                   |
+| +-------------------+                                   |
+| | Classes Service   | <--- ALB (8085/graphql)           |
+| | - Spring Boot JAR |                                   |
+| +-------------------+                                   |
+| +-------------------+                                   |
+| | Grades Service    | <--- ALB (8084/graphql)           |
+| | - Spring Boot JAR |                                   |
+| +-------------------+                                   |
+|                                    |                       |
++------------------------------------|-----------------------+
+             | | | | |
+             v v v v v
++------------------------------------|-----------------------+
+| Data Layer                         |                       |
+| - RDS PostgreSQL (Multi-AZ) for    |                       |
+|   university/students/teachers     |                       |
+| - ElastiCache (Redis) for caching  |                       |
++------------------------------------|-----------------------+
+             | | | | |
++------------|-----------------------|-----------------------+
+| Operations Layer                   |                       |
+| - CI/CD: GitHub Actions            |                       |
+| - On schema change:                |                       |
+|   - Publish schemas to GraphOS     |                       |
+| - Monitoring: Prometheus, Grafana  |                       |
+| - Logging: OpenSearch (ELK)        |                       |
+| - Tracing: AWS X-Ray / Jaeger      |                       |
+| - Secrets: AWS Secrets Manager     |                       |
+| - IaC: Terraform / CDK             |                       |
++------------------------------------|-----------------------+
+             ^ |
+             | |
+             +-------------------------------+
+             | Apollo GraphOS                |
+             | - Schema Registry             |
+             | - Composes supergraph.graphql |
+             | - Delivers to Router          |
+             +-------------------------------+
+```
+
+---
+
+## Diagram Explanation
+
+- **Host Machine (Build & Configure)**:
+  - Build Spring Boot JARs for `university`, `students`, `teachers`, `classes`, and `grades` subgraphs.
+  - Configure `supergraph.yaml`, `router.yaml`, and schema files.
+  - Run `docker-compose up` to start all services.
+- **Docker Environment**:
+  - **Subgraphs**: Each service (`university`, `students`, `teachers`, `classes`, `grades`) exposes a GraphQL endpoint.
+  - **Postgres**: Stores data for the `university` service.
+  - **Student Dashboard**: React frontend for querying and displaying data.
+  - **Rover**: Fetches schemas from subgraphs and composes `supergraph.graphql`.
+  - **Router**: Loads the supergraph and serves the federated API at `localhost:4000/graphql`.
+- **Host Machine (Query)**:
+  - Query the federated API at `http://localhost:4000/graphql` or interact via the React dashboard at `localhost:3000`.
+
+---
+
+## Detailed Setup Steps
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ankitrajput0096/federated_graphql_app
+cd federated_graphql_app
+```
+
+### 2. Build the Subgraph JARs
+Build all backend services using Gradle:
+```bash
+./gradlew clean build
+./gradlew bootJar
+```
+
+### 3. Run the Project
+Start all services using Docker Compose:
+```bash
+docker-compose up --build
+```
+- **Rover** waits 30 seconds for subgraphs to start, then composes `supergraph.graphql`.
+- **Router** waits 90 seconds, installs itself, and serves the federated API on `port 4000`.
+- **Student Dashboard** runs on `port 3000` with queries, mutations, and subscriptions demoed.
+
+### 4. Test the Federated API
+Example GraphQL query to fetch university and student data:
+```bash
+curl -X POST http://localhost:4000/graphql -H "Content-Type: application/json" -d '{"query": "query { university(id: \"1\") { id name description student { id text starRating grade { gpa } } } }"}'
+```
+
+### 5. Access the Frontend
+The React-based **Student Dashboard** is available at `http://localhost:3000`. It demonstrates queries, mutations, and subscriptions for interacting with the federated API.
+
+### 6. Stop the Project
+```bash
+docker-compose down
+```
+
+---
+
+## Subgraph Schemas
+
+### University Subgraph (`university-subgraph/src/main/resources/graphql/schema.graphqls`)
+```graphql
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@tag"])
 type Query {
     university(id: ID!): University
     universities: [University!]!
     searchUniversities(input: UniversityInput!): [SearchResult!]!
 }
-
-"""Represents a university entity"""
 type University @key(fields: "id") {
     id: ID!
     name: String!
     description: String
-    status: Status! @metadata(tag: "core")
+    status: Status!
     createdAt: Date!
     ranking: Int
 }
-
-"""Enum for university status"""
 enum Status {
     ACTIVE
     INACTIVE
 }
-
-"""Custom scalar for date representation"""
 scalar Date
-
-"""Interface for entities with common fields"""
 interface Entity @metadata(tag: "core") {
     id: ID!
     name(filter: String): String!
 }
-
-"""Union type for search results"""
 union SearchResult = University | Campus
-
-"""Represents a campus entity"""
 type Campus implements Entity @key(fields: "id") {
     id: ID!
     name(filter: String): String!
 }
-
-"""Input type for searching universities"""
 input UniversityInput {
     name: String!
     status: Status
 }
-
-"""Custom directive for metadata tagging"""
 directive @metadata(tag: String!) on OBJECT | INTERFACE | FIELD_DEFINITION
-
-"""Mutation for university operations"""
 type Mutation {
     createUniversity(name: String!, description: String, status: Status!, ranking: Int!): University!
     createCampus(id: ID!, name: String!): Campus!
 }
+```
+
+### Students Subgraph (`students-subgraph/src/main/resources/graphql/schema.graphqls`)
+```graphql
+scalar GPA
+directive @metadata(tag: String) on INTERFACE
+interface Rateable @metadata(tag: "ratable") {
+    rating(filter: Int): Int
+}
+type Grade implements Rateable {
+    studentId: String!
+    grade: String!
+    gpa: GPA!
+    rating(filter: Int): Int
+}
+type Student {
+    id: ID!
+    text: String
+    starRating: Int!
+    grade: Grade!
+    status: GradeLevel!
+}
+type Query {
+    student(universityId: ID!): [Student!]!
+    allStudents: [Student!]!
+}
+type Mutation {
+    addStudent(input: StudentInput!): Student!
+    updateStudent(input: StudentInput!): Student!
+}
+type Subscription {
+    studentUpdated(studentId: ID!): Student!
+}
+type University @key(fields: "id") @extends {
+    id: ID! @external
+    student: [Student!]!
+}
+enum GradeLevel {
+    A
+    B
+    C
+}
+input StudentInput {
+    id: ID!
+    text: String
+    starRating: Int!
+    universityId: ID!
+    status: GradeLevel!
+    grade: GradeInput
+}
+input GradeInput {
+    studentId: String!
+    grade: String!
+    gpa: GPA!
+}
+```
+
+### Teachers Subgraph (`teachers-subgraph/src/main/resources/graphql/schema.graphqls`)
+```graphql
+type University @key(fields: "id") @extends {
+    id: ID! @external
+    teacher: [Teacher!]!
+}
+type Teacher {
+    id: ID!
+    text: String @transform(format: "uppercase")
+    starRating: Int!
+    classes: [Class!]!
+    level: TeacherLevel!
+    details(filter: String): String @log(level: "INFO")
+}
+type Class implements Teachable {
+    id: ID!
+    subject: String! @transform(format: "capitalize")
+    teacherId: String!
+    duration: Time!
+    details(filter: String): String
+}
+scalar Time
+enum TeacherLevel {
+    JUNIOR
+    SENIOR
+}
+interface Teachable @metadata(tag: "teachable") {
+    details(filter: String): String
+}
+directive @transform(format: String!) on FIELD_DEFINITION
+directive @log(level: String = "INFO") on FIELD_DEFINITION | QUERY
+directive @metadata(tag: String!) on INTERFACE | OBJECT
+type Query {
+    teacher(universityId: ID!): [Teacher!]!
+    allTeachers: [Teacher!]!
+}
+```
+
+---
